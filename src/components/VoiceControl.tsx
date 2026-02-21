@@ -1,10 +1,14 @@
 import { Slider } from "@/components/ui/slider";
 import type { VoiceName, VoiceState } from "@/hooks/useAudioPlayer";
 import { Volume2, VolumeX, Loader2, AlertCircle } from "lucide-react";
+import { WaveformDisplay } from "./WaveformDisplay";
 
 interface VoiceControlProps {
   voice: VoiceState;
   onVolumeChange: (voice: VoiceName, volume: number) => void;
+  waveformData: Float32Array | null;
+  currentTime: number;
+  duration: number;
 }
 
 const voiceColorClass: Record<VoiceName, string> = {
@@ -21,44 +25,52 @@ const voiceTextClass: Record<VoiceName, string> = {
   "instrument": "voice-instrument",
 };
 
-export function VoiceControl({ voice, onVolumeChange }: VoiceControlProps) {
+export function VoiceControl({ voice, onVolumeChange, waveformData, currentTime, duration }: VoiceControlProps) {
   const isMuted = voice.volume === 0;
 
   return (
-    <div className="flex items-center gap-4 rounded-lg bg-secondary/50 px-4 py-3">
-      <div className="flex items-center gap-2 w-20">
-        <div className={`w-2.5 h-2.5 rounded-full ${voiceColorClass[voice.name]} ${voice.loading ? "animate-pulse-glow" : ""}`} />
-        <span className={`text-sm font-semibold capitalize ${voiceTextClass[voice.name]}`}>
-          {voice.name}
-        </span>
-      </div>
-
-      <button
-        onClick={() => onVolumeChange(voice.name, isMuted ? 0.8 : 0)}
-        className="text-muted-foreground hover:text-foreground transition-colors"
-      >
-        {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
-      </button>
-
-      <Slider
-        value={[voice.volume * 100]}
-        onValueChange={([v]) => onVolumeChange(voice.name, v / 100)}
-        max={100}
-        step={1}
-        className="flex-1"
+    <div className="rounded-lg bg-secondary/50 px-4 py-3 space-y-2">
+      <WaveformDisplay
+        voiceName={voice.name}
+        waveformData={waveformData}
+        currentTime={currentTime}
+        duration={duration}
       />
+      <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 w-20">
+          <div className={`w-2.5 h-2.5 rounded-full ${voiceColorClass[voice.name]} ${voice.loading ? "animate-pulse-glow" : ""}`} />
+          <span className={`text-sm font-semibold capitalize ${voiceTextClass[voice.name]}`}>
+            {voice.name}
+          </span>
+        </div>
 
-      <span className="text-xs text-muted-foreground w-8 text-right">
-        {Math.round(voice.volume * 100)}%
-      </span>
+        <button
+          onClick={() => onVolumeChange(voice.name, isMuted ? 0.8 : 0)}
+          className="text-muted-foreground hover:text-foreground transition-colors"
+        >
+          {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+        </button>
 
-      {voice.loading && <Loader2 size={16} className="animate-spin text-muted-foreground" />}
-      {voice.error && (
-        <span className="text-destructive text-xs flex items-center gap-1">
-          <AlertCircle size={14} />
-          {voice.error}
+        <Slider
+          value={[voice.volume * 100]}
+          onValueChange={([v]) => onVolumeChange(voice.name, v / 100)}
+          max={100}
+          step={1}
+          className="flex-1"
+        />
+
+        <span className="text-xs text-muted-foreground w-8 text-right">
+          {Math.round(voice.volume * 100)}%
         </span>
-      )}
+
+        {voice.loading && <Loader2 size={16} className="animate-spin text-muted-foreground" />}
+        {voice.error && (
+          <span className="text-destructive text-xs flex items-center gap-1">
+            <AlertCircle size={14} />
+            {voice.error}
+          </span>
+        )}
+      </div>
     </div>
   );
 }

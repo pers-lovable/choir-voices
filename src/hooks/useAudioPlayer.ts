@@ -16,9 +16,36 @@ export interface PlayerState {
   duration: number;
   currentSong: string | null;
   voices: Record<VoiceName, VoiceState>;
+  waveforms: Record<VoiceName, Float32Array | null>;
 }
 
 const VOICE_NAMES: VoiceName[] = ["grön", "röd", "svart", "instrument"];
+
+const WAVEFORM_SAMPLES = 4000;
+
+async function decodeWaveform(blob: Blob): Promise<Float32Array> {
+  const arrayBuffer = await blob.arrayBuffer();
+  const audioContext = new AudioContext();
+  try {
+    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+    const channelData = audioBuffer.getChannelData(0);
+    const blockSize = Math.floor(channelData.length / WAVEFORM_SAMPLES);
+    const waveform = new Float32Array(WAVEFORM_SAMPLES);
+    for (let i = 0; i < WAVEFORM_SAMPLES; i++) {
+      let max = 0;
+      const start = i * blockSize;
+      const end = start + blockSize;
+      for (let j = start; j < end; j++) {
+        const v = Math.abs(channelData[j]);
+        if (v > max) max = v;
+      }
+      waveform[i] = max;
+    }
+    return waveform;
+  } finally {
+    audioContext.close();
+  }
+}
 
 function makeAuthUrl(baseUrl: string, songName: string, voice: string, username: string, password: string) {
   // Build URL with basic auth embedded for fetching
@@ -45,9 +72,11 @@ export function useAudioPlayer(settings: AppSettings) {
       "svart": { name: "svart", volume: 0.8, loading: false, error: null },
       "instrument": { name: "instrument", volume: 0.8, loading: false, error: null },
     },
+    waveforms: { "grön": null, "röd": null, "svart": null, "instrument": null },
   });
 
   const animFrameRef = useRef<number>(0);
+  const loadIdRef = useRef(0);
 
   const updateTime = useCallback(() => {
     const first = audioRefs.current["grön"] || audioRefs.current["röd"] || audioRefs.current["svart"];
@@ -62,6 +91,8 @@ export function useAudioPlayer(settings: AppSettings) {
   }, []);
 
   const loadSong = useCallback(async (songName: string) => {
+    const loadId = ++loadIdRef.current;
+
     // Stop current playback
     VOICE_NAMES.forEach(v => {
       const el = audioRefs.current[v];
@@ -78,6 +109,7 @@ export function useAudioPlayer(settings: AppSettings) {
       currentTime: 0,
       duration: 0,
       currentSong: songName,
+      waveforms: { "grön": null, "röd": null, "svart": null, "instrument": null },
       voices: Object.fromEntries(
         VOICE_NAMES.map(v => [v, { ...s.voices[v], loading: true, error: null }])
       ) as Record<VoiceName, VoiceState>,
@@ -125,6 +157,15 @@ export function useAudioPlayer(settings: AppSettings) {
             [voice]: { ...s.voices[voice], loading: false, error: null },
           },
         }));
+
+        // Decode waveform in background — does not block audio playback
+        decodeWaveform(blob).then(waveform => {
+          if (loadIdRef.current !== loadId) return;
+          setState(s => ({
+            ...s,
+            waveforms: { ...s.waveforms, [voice]: waveform },
+          }));
+        }).catch(() => {});
       } catch (err: any) {
         setState(s => ({
           ...s,
