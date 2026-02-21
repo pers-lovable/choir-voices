@@ -20,7 +20,7 @@ const Index = () => {
 
   // Fetch songs on mount if server URL is configured
   useEffect(() => {
-    if (settings.serverUrl && settings.serverUrl !== "https://example.change.later/songs") {
+    if (settings.serverUrl && settings.serverUrl !== "https://choir-worker.choir-voices.workers.dev/vt2026") {
       fetchSongs();
     }
   }, []);

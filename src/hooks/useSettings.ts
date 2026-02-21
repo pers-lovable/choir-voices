@@ -9,7 +9,7 @@ export interface AppSettings {
 const SETTINGS_KEY = "choir-voices-settings";
 
 const defaultSettings: AppSettings = {
-  serverUrl: "https://example.change.later/songs",
+  serverUrl: "https://choir-worker.choir-voices.workers.dev/vt2026",
   password: "",
   username: "choir",
 };

@@ -22,7 +22,7 @@ const VOICE_NAMES: VoiceName[] = ["grön", "röd", "svart", "instrument"];
 
 function makeAuthUrl(baseUrl: string, songName: string, voice: string, username: string, password: string) {
   // Build URL with basic auth embedded for fetching
-  const url = new URL(`${baseUrl}/${songName}/${voice}.wav`);
+  const url = new URL(`${baseUrl}/${songName}/${voice}.mp3`);
   return { url: url.toString(), username, password };
 }
 
