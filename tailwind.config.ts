@@ -55,6 +55,7 @@ export default {
           gron: "hsl(var(--voice-gron))",
           rod: "hsl(var(--voice-rod))",
           svart: "hsl(var(--voice-svart))",
+          instrument: "hsl(var(--voice-instrument))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",

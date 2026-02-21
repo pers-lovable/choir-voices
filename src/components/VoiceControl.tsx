@@ -11,12 +11,14 @@ const voiceColorClass: Record<VoiceName, string> = {
   "grön": "bg-voice-gron",
   "röd": "bg-voice-rod",
   "svart": "bg-voice-svart",
+  "instrument": "bg-voice-instrument",
 };
 
 const voiceTextClass: Record<VoiceName, string> = {
   "grön": "voice-gron",
   "röd": "voice-rod",
   "svart": "voice-svart",
+  "instrument": "voice-instrument",
 };
 
 export function VoiceControl({ voice, onVolumeChange }: VoiceControlProps) {

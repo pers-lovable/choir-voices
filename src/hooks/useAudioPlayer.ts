@@ -1,7 +1,7 @@
 import { useRef, useState, useCallback, useEffect } from "react";
 import type { AppSettings } from "./useSettings";
 
-export type VoiceName = "grön" | "röd" | "svart";
+export type VoiceName = "grön" | "röd" | "svart" | "instrument";
 
 export interface VoiceState {
   name: VoiceName;
@@ -18,7 +18,7 @@ export interface PlayerState {
   voices: Record<VoiceName, VoiceState>;
 }
 
-const VOICE_NAMES: VoiceName[] = ["grön", "röd", "svart"];
+const VOICE_NAMES: VoiceName[] = ["grön", "röd", "svart", "instrument"];
 
 function makeAuthUrl(baseUrl: string, songName: string, voice: string, username: string, password: string) {
   // Build URL with basic auth embedded for fetching
@@ -31,6 +31,7 @@ export function useAudioPlayer(settings: AppSettings) {
     "grön": null,
     "röd": null,
     "svart": null,
+    "instrument": null,
   });
 
   const [state, setState] = useState<PlayerState>({
@@ -42,6 +43,7 @@ export function useAudioPlayer(settings: AppSettings) {
       "grön": { name: "grön", volume: 0.8, loading: false, error: null },
       "röd": { name: "röd", volume: 0.8, loading: false, error: null },
       "svart": { name: "svart", volume: 0.8, loading: false, error: null },
+      "instrument": { name: "instrument", volume: 0.8, loading: false, error: null },
     },
   });
 
