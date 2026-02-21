@@ -1,73 +1,88 @@
-# Welcome to your Lovable project
+# Choir Voices
 
-## Project info
+A web app for choir members to listen to individual voice tracks for songs.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Architecture
 
-## How can I edit this code?
+```
+Browser (React app)
+    │  Basic Auth (password only)
+    ▼
+Cloudflare Worker  (worker/)
+    │  B2 credentials stored as Worker secrets
+    ▼
+Backblaze B2 (private bucket)
+```
 
-There are several ways of editing your application.
+The Cloudflare Worker acts as a credentialed proxy. B2 credentials never reach the browser. Backblaze B2 and Cloudflare are members of the Bandwidth Alliance, so egress between them is free.
 
-**Use Lovable**
+## B2 bucket structure
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+```
+{year}/{songName}/grön.wav
+{year}/{songName}/röd.wav
+{year}/{songName}/svart.wav
+{year}/{songName}/instrument.wav
+```
 
-Changes made via Lovable will be committed automatically to this repo.
+## App settings
 
-**Use your preferred IDE**
+In the app's settings view, configure:
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- **Server-URL** — the Worker URL with the current year appended, e.g. `https://choir-worker.myname.workers.dev/2025`
+- **Lösenord** — the shared choir password
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+The username field can be left as-is; the Worker ignores it.
 
-Follow these steps:
+## Deploying the Worker
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+Requirements: Node.js, npm, a Cloudflare account.
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+```bash
+cd worker
+npm install
+wrangler login       # one-time browser auth
+wrangler deploy      # creates the Worker in Cloudflare
 
-# Step 3: Install the necessary dependencies.
-npm i
+# Set secrets (wrangler prompts for each value):
+wrangler secret put B2_KEY_ID
+wrangler secret put B2_APP_KEY
+wrangler secret put B2_BUCKET_ID
+wrangler secret put B2_BUCKET_NAME
+wrangler secret put USER_PASSWORD
+```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+After deploy, Wrangler prints the Worker URL. Set that URL (plus `/year`) as the Server-URL in the app.
+
+### Secrets reference
+
+| Secret | Description |
+|---|---|
+| `B2_KEY_ID` | Backblaze application key ID |
+| `B2_APP_KEY` | Backblaze application key |
+| `B2_BUCKET_ID` | Backblaze bucket ID (used for listing) |
+| `B2_BUCKET_NAME` | Backblaze bucket name (used for downloads) |
+| `USER_PASSWORD` | Shared password for choir members |
+
+### Updating the Worker
+
+```bash
+cd worker
+wrangler deploy
+```
+
+## Developing the frontend locally
+
+Requirements: Node.js, npm.
+
+```bash
+npm install
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Technologies
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+- React, TypeScript, Vite
+- shadcn-ui, Tailwind CSS
+- Cloudflare Workers (backend proxy)
+- Backblaze B2 (file storage)
