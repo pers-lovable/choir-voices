@@ -196,18 +196,12 @@ export function useAudioPlayer(settings: AppSettings) {
     if (!first) return;
     const time = first.currentTime;
 
-    // Phase 1: seek all tracks first. On iOS, currentTime assignment can
-    // involve audio session repositioning and take non-trivial time. Doing
-    // all seeks before any play() call minimises the gap between when the
-    // first and last track start playing.
     VOICE_NAMES.forEach(v => {
       const el = audioRefs.current[v];
-      if (el) el.currentTime = time;
-    });
-
-    // Phase 2: start all tracks as close together as possible.
-    VOICE_NAMES.forEach(v => {
-      audioRefs.current[v]?.play().catch(() => {});
+      if (el) {
+        el.currentTime = time;
+        el.play().catch(() => {});
+      }
     });
 
     setState(s => ({ ...s, playing: true }));
