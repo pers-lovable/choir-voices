@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Music, RefreshCw, Loader2 } from "lucide-react";
+import { Music, RefreshCw, Loader2, Settings } from "lucide-react";
 
 interface SongListProps {
   songs: string[];
@@ -9,22 +9,33 @@ interface SongListProps {
   error: string | null;
   onSelectSong: (song: string) => void;
   onRefresh: () => void;
+  onSettings: () => void;
 }
 
-export function SongList({ songs, currentSong, loading, error, onSelectSong, onRefresh }: SongListProps) {
+export function SongList({ songs, currentSong, loading, error, onSelectSong, onRefresh, onSettings }: SongListProps) {
   return (
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-lg font-serif text-foreground">Låtar</h2>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onRefresh}
-          disabled={loading}
-          className="text-muted-foreground hover:text-primary h-8 w-8"
-        >
-          {loading ? <Loader2 size={16} className="animate-spin" /> : <RefreshCw size={16} />}
-        </Button>
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onRefresh}
+            disabled={loading}
+            className="text-muted-foreground hover:text-primary h-8 w-8"
+          >
+            {loading ? <Loader2 size={16} className="animate-spin" /> : <RefreshCw size={16} />}
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onSettings}
+            className="text-muted-foreground hover:text-primary h-8 w-8"
+          >
+            <Settings size={16} />
+          </Button>
+        </div>
       </div>
 
       {error && (

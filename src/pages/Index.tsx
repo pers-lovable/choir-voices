@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { Settings } from "lucide-react";
-import { Button } from "@/components/ui/button";
+
 import { useSettings } from "@/hooks/useSettings";
 import { useAudioPlayer } from "@/hooks/useAudioPlayer";
 import { useSongList } from "@/hooks/useSongList";
@@ -63,14 +62,6 @@ const Index = () => {
             korforalla.se
           </a>
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setShowSettings(true)}
-          className="text-muted-foreground hover:text-foreground"
-        >
-          <Settings size={20} />
-        </Button>
       </header>
 
       <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
@@ -83,6 +74,7 @@ const Index = () => {
             error={songsError}
             onSelectSong={handleSelectSong}
             onRefresh={fetchSongs}
+            onSettings={() => setShowSettings(true)}
           />
         </aside>
 
