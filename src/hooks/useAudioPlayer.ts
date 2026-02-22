@@ -12,6 +12,11 @@ export interface VoiceState {
 
 export interface WaveformData {
   waveform: Float32Array;
+  /** Duration of the decoded AudioBuffer for this voice (seconds).
+   *  Used as the denominator for waveform sample-index mapping so the
+   *  waveform scrolls in lockstep with the actual audio regardless of
+   *  per-voice encoding differences. */
+  duration: number;
 }
 
 export interface PlayerState {
@@ -284,7 +289,7 @@ export function useAudioPlayer(settings: AppSettings) {
         setState(s => ({
           ...s,
           duration: Math.max(s.duration, buffer.duration),
-          waveforms: { ...s.waveforms, [voice]: { waveform } },
+          waveforms: { ...s.waveforms, [voice]: { waveform, duration: buffer.duration } },
           voices: { ...s.voices, [voice]: { ...s.voices[voice], loading: false, error: null } },
         }));
       } catch (err: any) {

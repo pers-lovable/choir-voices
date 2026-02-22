@@ -33,6 +33,7 @@ export function VoiceControl({ voice, onVolumeChange, waveformData, currentTime,
       <WaveformDisplay
         voiceName={voice.name}
         waveformData={waveformData?.waveform ?? null}
+        waveformDuration={waveformData?.duration ?? 0}
         currentTime={currentTime}
         duration={duration}
       />

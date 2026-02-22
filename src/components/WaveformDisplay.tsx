@@ -14,22 +14,26 @@ const VOICE_COLORS: Record<string, string> = {
 interface WaveformDisplayProps {
   voiceName: string;
   waveformData: Float32Array | null;
+  /** Duration of this voice's decoded buffer — used as the denominator for
+   *  sample-index mapping so the waveform scrolls in lockstep with the audio
+   *  even when voices have slightly different encoded lengths. */
+  waveformDuration: number;
   currentTime: number;
   duration: number;
 }
 
-export function WaveformDisplay({ voiceName, waveformData, currentTime, duration }: WaveformDisplayProps) {
+export function WaveformDisplay({ voiceName, waveformData, waveformDuration, currentTime, duration }: WaveformDisplayProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const color = VOICE_COLORS[voiceName] ?? "hsl(220, 10%, 50%)";
 
   // Keep latest draw params in a ref so the stable draw() callback can read them
-  const paramsRef = useRef({ waveformData, currentTime, duration, color });
-  paramsRef.current = { waveformData, currentTime, duration, color };
+  const paramsRef = useRef({ waveformData, waveformDuration, currentTime, duration, color });
+  paramsRef.current = { waveformData, waveformDuration, currentTime, duration, color };
 
   const draw = useCallback((canvas: HTMLCanvasElement) => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    const { waveformData, currentTime, duration, color } = paramsRef.current;
+    const { waveformData, waveformDuration, currentTime, duration, color } = paramsRef.current;
     const w = canvas.width;
     const h = canvas.height;
     if (w === 0 || h === 0) return;
@@ -37,7 +41,7 @@ export function WaveformDisplay({ voiceName, waveformData, currentTime, duration
     ctx.clearRect(0, 0, w, h);
     const playheadX = Math.floor(w / 2);
 
-    if (!waveformData || duration === 0) {
+    if (!waveformData || duration === 0 || waveformDuration === 0) {
       // Empty state: dim centre line + playhead
       ctx.fillStyle = "rgba(255,255,255,0.08)";
       ctx.fillRect(0, h / 2 - 1, w, 2);
@@ -52,7 +56,9 @@ export function WaveformDisplay({ voiceName, waveformData, currentTime, duration
     for (let x = 0; x < w; x++) {
       const t = currentTime + (x - playheadX) / pixelsPerSecond;
       if (t < 0 || t > duration) continue;
-      const si = Math.min(samples - 1, Math.floor((t / duration) * (samples - 1)));
+      // waveformDuration is this voice's own buffer.duration — keeps sample-index
+      // mapping in lockstep with the audio even when voices differ in length.
+      const si = Math.min(samples - 1, Math.floor((t / waveformDuration) * (samples - 1)));
       const amplitude = waveformData[si];
       const barH = Math.max(1, amplitude * h * 0.9);
       ctx.globalAlpha = x <= playheadX ? 0.85 : 0.3;
@@ -91,7 +97,7 @@ export function WaveformDisplay({ voiceName, waveformData, currentTime, duration
     const canvas = canvasRef.current;
     if (!canvas || canvas.width === 0) return;
     draw(canvas);
-  }, [waveformData, currentTime, duration, color, draw]);
+  }, [waveformData, waveformDuration, currentTime, duration, color, draw]);
 
   return (
     <canvas
