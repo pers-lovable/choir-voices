@@ -87,14 +87,6 @@ export function useAudioPlayer(settings: AppSettings) {
 
   const animFrameRef = useRef<number>(0);
   const loadIdRef = useRef(0);
-  const syncFrameRef = useRef(0);
-
-  // Drift threshold: snap any track that deviates more than this from the
-  // reference. 40ms is below the threshold for audible flanger/echo but large
-  // enough not to trigger on normal scheduling jitter.
-  const DRIFT_THRESHOLD = 0.04;
-  // Check drift every N animation frames (~2 s at 60 fps).
-  const SYNC_INTERVAL_FRAMES = 120;
 
   const updateTime = useCallback(() => {
     const first = audioRefs.current["grön"] || audioRefs.current["röd"] || audioRefs.current["svart"];
@@ -104,25 +96,6 @@ export function useAudioPlayer(settings: AppSettings) {
         currentTime: first.currentTime,
         duration: first.duration || 0,
       }));
-
-      // Periodic drift correction: keep secondary tracks locked to grön.
-      // On iOS, HTMLAudioElement instances can develop subtle rate differences
-      // over time (different internal clocks/resamplers), causing convergence
-      // and divergence that sounds like flanger/echo. Snapping drifted tracks
-      // back to the reference every ~2 s keeps them aligned.
-      syncFrameRef.current += 1;
-      if (syncFrameRef.current >= SYNC_INTERVAL_FRAMES) {
-        syncFrameRef.current = 0;
-        const refTime = audioRefs.current["grön"]?.currentTime ?? first.currentTime;
-        VOICE_NAMES.forEach(v => {
-          if (v === "grön") return;
-          const el = audioRefs.current[v];
-          if (el && !el.paused && Math.abs(el.currentTime - refTime) > DRIFT_THRESHOLD) {
-            el.currentTime = refTime;
-          }
-        });
-      }
-
       animFrameRef.current = requestAnimationFrame(updateTime);
     } else if (first?.ended) {
       setState(s => ({ ...s, playing: false }));
@@ -231,7 +204,6 @@ export function useAudioPlayer(settings: AppSettings) {
       }
     });
 
-    syncFrameRef.current = 0;
     setState(s => ({ ...s, playing: true }));
     animFrameRef.current = requestAnimationFrame(updateTime);
   }, [updateTime]);
