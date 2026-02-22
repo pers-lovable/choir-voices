@@ -159,21 +159,12 @@ export function useAudioPlayer(settings: AppSettings) {
     // Stop any lingering nodes from a previous session
     stopSourceNodes();
 
-    // Create AudioContext + GainNodes lazily inside the user gesture (iOS requirement).
-    // On iOS, AudioContext must be created (or resumed) inside a user-gesture handler
-    // to be allowed to produce sound.
-    if (!audioCtxRef.current) {
-      audioCtxRef.current = new AudioContext();
-      VOICE_NAMES.forEach(v => {
-        const gain = audioCtxRef.current!.createGain();
-        gain.gain.value = volumesRef.current[v];
-        gain.connect(audioCtxRef.current!.destination);
-        gainNodesRef.current[v] = gain;
-      });
-    }
     const ctx = audioCtxRef.current;
+    if (!ctx) return; // no song loaded yet
 
-    // Resume if suspended (e.g. after pause() or background tab)
+    // iOS requires AudioContext.resume() to be called inside a user-gesture handler.
+    // The context was created (suspended) during loadSong; resuming it here — inside
+    // the play button's click handler — satisfies that requirement on all platforms.
     if (ctx.state === "suspended") {
       await ctx.resume();
     }
@@ -259,12 +250,21 @@ export function useAudioPlayer(settings: AppSettings) {
       ) as Record<VoiceName, VoiceState>,
     }));
 
-    // For decodeAudioData we need an AudioContext. Reuse the playback context if it
-    // exists, otherwise create a temporary one. Creating an AudioContext outside a
-    // user gesture is allowed — it just starts suspended. decodeAudioData works fine
-    // on a suspended context since it doesn't produce audio output.
-    const savedCtx = audioCtxRef.current;
-    const decodeCtx = savedCtx ?? new AudioContext();
+    // Create the AudioContext + GainNodes here rather than in play().
+    // The context starts in "suspended" state, which is fine for decodeAudioData.
+    // play() will call ctx.resume() inside the user gesture to enable audio output
+    // on iOS. Using a single persistent context avoids the WebKit issue where
+    // AudioBuffers become invalid after their originating context is closed.
+    if (!audioCtxRef.current) {
+      audioCtxRef.current = new AudioContext();
+      VOICE_NAMES.forEach(v => {
+        const gain = audioCtxRef.current!.createGain();
+        gain.gain.value = volumesRef.current[v];
+        gain.connect(audioCtxRef.current!.destination);
+        gainNodesRef.current[v] = gain;
+      });
+    }
+    const decodeCtx = audioCtxRef.current;
 
     for (const voice of VOICE_NAMES) {
       if (loadIdRef.current !== loadId) break;
@@ -301,8 +301,6 @@ export function useAudioPlayer(settings: AppSettings) {
       }
     }
 
-    // Close the temporary decode context if we created one
-    if (!savedCtx) decodeCtx.close();
   }, [settings.serverUrl, settings.password, stopSourceNodes]);
 
   // Cleanup on unmount
