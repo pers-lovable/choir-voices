@@ -8,10 +8,12 @@ import { TransportControls } from "@/components/TransportControls";
 import { Timeline } from "@/components/Timeline";
 import { SongList } from "@/components/SongList";
 import { SettingsView } from "@/components/SettingsView";
+import { AboutDialog } from "@/components/AboutDialog";
 import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
   const [showSettings, setShowSettings] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
   const { settings, setSettings } = useSettings();
   const { state, loadSong, play, pause, stop, seek, skip, setVolume, voiceNames } = useAudioPlayer(settings);
   const { songs, loading: songsLoading, error: songsError, fetchSongs } = useSongList(settings);
@@ -51,18 +53,12 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <header className="flex items-center justify-between px-4 py-3 border-b border-border">
-        <div className="flex items-center gap-2">
-          <img src="/logo.png" alt="" className="h-6 w-auto" />
-          <h1 className="text-xl font-serif text-foreground">Kör för alla</h1>
-          <h2>- ickeofficiell app</h2>
-          <span>    </span>Sång och gitarr: Caroline af Ugglas <img src="/caroline.png" alt="" className="h-6 w-auto" /> & Heinz Liljedahl
-             <img src="/heinz.png" alt="" className="h-6 w-auto" />
-             <a href="https://korforalla.se/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
-            korforalla.se
-          </a>
-        </div>
+      <header className="flex items-center px-4 py-3 border-b border-border">
+        <img src="/logo.png" alt="" className="h-6 w-auto" />
+        <h1 className="text-xl font-serif text-foreground ml-2">Kör för alla</h1>
       </header>
+
+      <AboutDialog open={showAbout} onClose={() => setShowAbout(false)} />
 
       <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
         {/* Song list sidebar */}
@@ -75,6 +71,7 @@ const Index = () => {
             onSelectSong={handleSelectSong}
             onRefresh={fetchSongs}
             onSettings={() => setShowSettings(true)}
+            onAbout={() => setShowAbout(true)}
           />
         </aside>
 
