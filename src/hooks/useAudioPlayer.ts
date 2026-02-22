@@ -84,6 +84,9 @@ export function useAudioPlayer(settings: AppSettings) {
   // itself cleanly and allows it to wait for the context to finish resuming
   // after a synchronous (non-awaited) ctx.resume() call on iOS.
   const isPlayingRef = useRef(false);
+  // Screen Wake Lock — keeps the display on while audio is playing.
+  // Supported in Safari 16.4+. Gracefully no-ops on older browsers.
+  const wakeLockRef = useRef<WakeLockSentinel | null>(null);
 
   const [state, setState] = useState<PlayerState>({
     playing: false,
@@ -98,6 +101,19 @@ export function useAudioPlayer(settings: AppSettings) {
     },
     waveforms: { "grön": null, "röd": null, "svart": null, "instrument": null },
   });
+
+  const acquireWakeLock = useCallback(() => {
+    if (!("wakeLock" in navigator)) return;
+    navigator.wakeLock.request("screen").then(sentinel => {
+      wakeLockRef.current = sentinel;
+      sentinel.addEventListener("release", () => { wakeLockRef.current = null; });
+    }).catch(() => {});
+  }, []);
+
+  const releaseWakeLock = useCallback(() => {
+    wakeLockRef.current?.release();
+    wakeLockRef.current = null;
+  }, []);
 
   // Stops all AudioBufferSourceNodes cleanly.
   // Sets onended=null first so natural-end detection is not accidentally triggered.
@@ -158,6 +174,7 @@ export function useAudioPlayer(settings: AppSettings) {
           isPlayingRef.current = false;
           pausedAtRef.current = 0;
           cancelAnimationFrame(animFrameRef.current);
+          releaseWakeLock();
           setState(s => ({ ...s, playing: false, currentTime: 0 }));
         }
       };
@@ -186,9 +203,10 @@ export function useAudioPlayer(settings: AppSettings) {
     startNodesAt(ctx, pausedAtRef.current);
 
     isPlayingRef.current = true;
+    acquireWakeLock();
     setState(s => ({ ...s, playing: true }));
     animFrameRef.current = requestAnimationFrame(updateTime);
-  }, [stopSourceNodes, startNodesAt, updateTime]);
+  }, [stopSourceNodes, startNodesAt, updateTime, acquireWakeLock]);
 
   const pause = useCallback(() => {
     const ctx = audioCtxRef.current;
@@ -198,8 +216,9 @@ export function useAudioPlayer(settings: AppSettings) {
     stopSourceNodes();
     ctx.suspend();
     cancelAnimationFrame(animFrameRef.current);
+    releaseWakeLock();
     setState(s => ({ ...s, playing: false }));
-  }, [stopSourceNodes]);
+  }, [stopSourceNodes, releaseWakeLock]);
 
   const stop = useCallback(() => {
     isPlayingRef.current = false;
@@ -207,8 +226,9 @@ export function useAudioPlayer(settings: AppSettings) {
     pausedAtRef.current = 0;
     audioCtxRef.current?.suspend();
     cancelAnimationFrame(animFrameRef.current);
+    releaseWakeLock();
     setState(s => ({ ...s, playing: false, currentTime: 0 }));
-  }, [stopSourceNodes]);
+  }, [stopSourceNodes, releaseWakeLock]);
 
   const seek = useCallback((time: number) => {
     const clamped = Math.max(0, Math.min(time, durationRef.current));
@@ -320,14 +340,27 @@ export function useAudioPlayer(settings: AppSettings) {
 
   }, [settings.serverUrl, settings.password, stopSourceNodes]);
 
+  // Re-acquire the wake lock when the page comes back to the foreground.
+  // The OS automatically releases it when the screen locks or the tab is hidden.
+  useEffect(() => {
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible" && isPlayingRef.current) {
+        acquireWakeLock();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", onVisibilityChange);
+  }, [acquireWakeLock]);
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
       cancelAnimationFrame(animFrameRef.current);
       stopSourceNodes();
+      releaseWakeLock();
       audioCtxRef.current?.close();
     };
-  }, [stopSourceNodes]);
+  }, [stopSourceNodes, releaseWakeLock]);
 
   return { state, loadSong, play, pause, stop, seek, skip, setVolume, voiceNames: VOICE_NAMES };
 }

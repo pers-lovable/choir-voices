@@ -7,13 +7,14 @@ interface SongListProps {
   currentSong: string | null;
   loading: boolean;
   error: string | null;
+  hasPassword: boolean;
   onSelectSong: (song: string) => void;
   onRefresh: () => void;
   onSettings: () => void;
   onAbout: () => void;
 }
 
-export function SongList({ songs, currentSong, loading, error, onSelectSong, onRefresh, onSettings, onAbout }: SongListProps) {
+export function SongList({ songs, currentSong, loading, error, hasPassword, onSelectSong, onRefresh, onSettings, onAbout }: SongListProps) {
   return (
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-between mb-3">
@@ -28,14 +29,22 @@ export function SongList({ songs, currentSong, loading, error, onSelectSong, onR
           >
             {loading ? <Loader2 size={16} className="animate-spin" /> : <RefreshCw size={16} />}
           </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onSettings}
-            className="text-muted-foreground hover:text-primary h-8 w-8"
-          >
-            <Settings size={16} />
-          </Button>
+          <div className="relative">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onSettings}
+              className="text-muted-foreground hover:text-primary h-8 w-8"
+            >
+              <Settings size={16} />
+            </Button>
+            {!hasPassword && (
+              <div className="absolute top-full right-0 mt-2 z-50 bg-primary text-primary-foreground text-xs rounded-md px-3 py-2 w-44 shadow-lg leading-relaxed pointer-events-none">
+                <div className="absolute -top-1.5 right-2.5 w-3 h-3 bg-primary rotate-45" />
+                Börja med att mata in lösenordet här
+              </div>
+            )}
+          </div>
           <Button
             variant="ghost"
             size="icon"
