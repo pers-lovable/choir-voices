@@ -99,6 +99,8 @@ export function useAudioPlayer(settings: AppSettings) {
         duration: first.duration || 0,
       }));
       animFrameRef.current = requestAnimationFrame(updateTime);
+    } else if (first?.ended) {
+      setState(s => ({ ...s, playing: false }));
     }
   }, []);
 
