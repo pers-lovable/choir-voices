@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import { useSettings } from "@/hooks/useSettings";
 import { useAudioPlayer } from "@/hooks/useAudioPlayer";
@@ -34,6 +34,19 @@ const Index = () => {
       loadSong(songs[0]);
     }
   }, [songs, state.currentSong, loadSong]);
+
+  // Show a loading notification while any voice is loading, dismiss it when done
+  const dismissLoadingToast = useRef<(() => void) | null>(null);
+  const isLoading = state.currentSong !== null && Object.values(state.voices).some(v => v.loading);
+  useEffect(() => {
+    if (isLoading) {
+      const { dismiss } = toast({ title: "Laddar sång..." });
+      dismissLoadingToast.current = dismiss;
+    } else {
+      dismissLoadingToast.current?.();
+      dismissLoadingToast.current = null;
+    }
+  }, [isLoading]);
 
   const handleSelectSong = (song: string) => {
     loadSong(song);
