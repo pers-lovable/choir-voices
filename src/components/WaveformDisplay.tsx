@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useCallback } from "react";
 
 // Seconds of audio visible across the full canvas width
 const ZOOM_SECONDS = 20;
@@ -22,21 +22,19 @@ export function WaveformDisplay({ voiceName, waveformData, currentTime, duration
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const color = VOICE_COLORS[voiceName] ?? "hsl(220, 10%, 50%)";
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+  // Keep latest draw params in a ref so the stable draw() callback can read them
+  const paramsRef = useRef({ waveformData, currentTime, duration, color });
+  paramsRef.current = { waveformData, currentTime, duration, color };
+
+  const draw = useCallback((canvas: HTMLCanvasElement) => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-
-    // Sync canvas pixel dimensions to its rendered size
-    const w = canvas.clientWidth;
-    const h = canvas.clientHeight;
+    const { waveformData, currentTime, duration, color } = paramsRef.current;
+    const w = canvas.width;
+    const h = canvas.height;
     if (w === 0 || h === 0) return;
-    if (canvas.width !== w) canvas.width = w;
-    if (canvas.height !== h) canvas.height = h;
 
     ctx.clearRect(0, 0, w, h);
-
     const playheadX = Math.floor(w / 2);
 
     if (!waveformData || duration === 0) {
@@ -51,7 +49,6 @@ export function WaveformDisplay({ voiceName, waveformData, currentTime, duration
     const pixelsPerSecond = w / ZOOM_SECONDS;
     const samples = waveformData.length;
 
-    // Draw waveform bars — past (left of playhead) at full opacity, future dimmer
     for (let x = 0; x < w; x++) {
       const t = currentTime + (x - playheadX) / pixelsPerSecond;
       if (t < 0 || t > duration) continue;
@@ -64,10 +61,37 @@ export function WaveformDisplay({ voiceName, waveformData, currentTime, duration
     }
     ctx.globalAlpha = 1;
 
-    // Playhead
     ctx.fillStyle = "rgba(255,255,255,0.85)";
     ctx.fillRect(playheadX, 0, 1, h);
-  }, [waveformData, currentTime, duration, color]);
+  }, []);
+
+  // ResizeObserver: sets canvas pixel dimensions from actual layout, then redraws.
+  // This is more reliable than reading clientWidth inside useEffect, which can
+  // return 0 in Firefox before the browser resolves canvas intrinsic dimensions.
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const { width, height } = entry.contentRect;
+        if (width > 0 && height > 0) {
+          canvas.width = Math.round(width);
+          canvas.height = Math.round(height);
+          draw(canvas);
+        }
+      }
+    });
+    observer.observe(canvas);
+    return () => observer.disconnect();
+  }, [voiceName, draw]);
+
+  // Redraw when data or playback position changes
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || canvas.width === 0) return;
+    draw(canvas);
+  }, [waveformData, currentTime, duration, color, draw]);
 
   return (
     <canvas

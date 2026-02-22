@@ -98,6 +98,9 @@ const Index = () => {
                 key={name}
                 voice={state.voices[name]}
                 onVolumeChange={setVolume}
+                waveformData={state.waveforms[name]}
+                currentTime={state.currentTime}
+                duration={state.duration}
               />
             ))}
           </div>
