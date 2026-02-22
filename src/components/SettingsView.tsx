@@ -24,7 +24,7 @@ export function SettingsView({ settings, onSave, onBack }: SettingsViewProps) {
       </div>
 
       <div className="space-y-4">
-        <div className="space-y-2">
+        <div className="space-y-2" hidden={true}>
           <Label htmlFor="serverUrl" className="text-foreground">Server-URL</Label>
           <Input
             id="serverUrl"
@@ -39,7 +39,7 @@ export function SettingsView({ settings, onSave, onBack }: SettingsViewProps) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="password" className="text-foreground">Lösenord</Label>
+          <Label htmlFor="password" className="text-foreground">Lösenord (samma som till Heinz Dropbox)</Label>
           <Input
             id="password"
             type="password"

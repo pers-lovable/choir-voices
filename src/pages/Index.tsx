@@ -56,6 +56,7 @@ const Index = () => {
       <header className="flex items-center px-4 py-3 border-b border-border">
         <img src="/logo.png" alt="" className="h-6 w-auto" />
         <h1 className="text-xl font-serif text-foreground ml-2">Kör för alla</h1>
+        <h2 className="text-sm font-serif text-muted-foreground ml-2">(inofficiellt verktyg)</h2>
       </header>
 
       <AboutDialog open={showAbout} onClose={() => setShowAbout(false)} />

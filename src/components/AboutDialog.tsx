@@ -32,19 +32,11 @@ export function AboutDialog({ open, onClose }: AboutDialogProps) {
         </div>
         Ljudfilerna från Heinz Dropbox har processats så här: 
         <ul className="list-disc list-inside text-sm text-foreground">
-          <li>Grön, röd och svart orginalfil trimmades så att de börjar vid samma tidpunkt (synkning).</li>
-          <li>Sång och gitarr separerades genom s.k. stemming m.h.a. <a href="https://github.com/nomadkaraoke/python-audio-separator" target="_blank" className="underline">python-audio-separator</a>. OBS det sker på bekostnad av viss ljudförsämring av sång och gitarr.</li>
+          <li>Grön, röd och svart orginalfil har trimmats så att de börjar vid samma tidpunkt (synkning).</li>
+          <li>Sång och gitarr har separerats genom s.k. stemming m.h.a. <a href="https://github.com/nomadkaraoke/python-audio-separator" target="_blank" className="underline">python-audio-separator</a>. Varje orginalljudfil (gitarr + sång) ger alltså två filer vid stemming: en med sång och en med gitarr. OBS det sker på bekostnad av viss ljudförsämring av sång och gitarr - sorry.</li>
           <li>Gitarrens ljudfil har plockats från svart stämmas orginalfil (efter stemmingen).</li>
         </ul>
-        Appen är inte kopplad till Kör för alla utan är ett hobbyprojekt. För frågor eller feedback, besök gärna <a href="https://github.com/pers-lovable/choir-voices" target="_blank" className="">GitHub-sidan</a>.
-        <a
-          href="https://korforalla.se/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-sm text-primary hover:underline"
-        >
-          korforalla.se
-        </a>
+        <p className="text-sm text-foreground">Appen är inte kopplad till Kör för alla utan är ett hobbyprojekt av en medlem. För frågor eller feedback, besök gärna <a href="https://github.com/pers-lovable/choir-voices" target="_blank" className="underline">GitHub-sidan</a>. Besök även <a href="https://korforalla.se/" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:no-underline">korforalla.se</a>.</p>
       </DialogContent>
     </Dialog>
   );
