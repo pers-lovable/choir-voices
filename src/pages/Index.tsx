@@ -28,6 +28,13 @@ const Index = () => {
     }
   }, [fetchSongs, clearSongs]);
 
+  // Auto-load the first song once the list is available and nothing is loaded yet
+  useEffect(() => {
+    if (songs.length > 0 && !state.currentSong) {
+      loadSong(songs[0]);
+    }
+  }, [songs, state.currentSong, loadSong]);
+
   const handleSelectSong = (song: string) => {
     loadSong(song);
   };
