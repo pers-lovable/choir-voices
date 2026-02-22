@@ -16,7 +16,7 @@ export function AboutDialog({ open, onClose }: AboutDialogProps) {
           </DialogTitle>
         </DialogHeader>
 
-        <p className="text-sm text-muted-foreground">Ickeofficiell app</p>
+        <p className="text-sm text-muted-foreground">Ickeofficiell app · Version: {__GIT_COMMIT__}</p>
 
         <p className="text-sm text-foreground">Sång och gitarr:</p>
 
