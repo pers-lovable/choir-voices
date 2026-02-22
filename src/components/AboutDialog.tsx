@@ -22,11 +22,9 @@ export function AboutDialog({ open, onClose }: AboutDialogProps) {
 
         <div className="flex items-center gap-4 py-2">
           <div className="flex flex-col items-center gap-1">
-            <img src="/caroline.png" alt="Caroline af Ugglas" className="h-20 w-auto rounded-md object-cover" />
             <span className="text-xs text-muted-foreground">Caroline af Ugglas</span>
           </div>
           <div className="flex flex-col items-center gap-1">
-            <img src="/heinz.png" alt="Heinz Liljedahl" className="h-20 w-auto rounded-md object-cover" />
             <span className="text-xs text-muted-foreground">Heinz Liljedahl</span>
           </div>
         </div>
