@@ -71,7 +71,6 @@ const Index = () => {
             error={songsError}
             hasPassword={!!settings.password}
             onSelectSong={handleSelectSong}
-            onRefresh={fetchSongs}
             onSettings={() => setShowSettings(true)}
             onAbout={() => setShowAbout(true)}
           />

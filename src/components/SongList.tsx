@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Music, RefreshCw, Loader2, Settings, Info } from "lucide-react";
+import { Music, Settings, Info } from "lucide-react";
 
 interface SongListProps {
   songs: string[];
@@ -9,28 +9,17 @@ interface SongListProps {
   error: string | null;
   hasPassword: boolean;
   onSelectSong: (song: string) => void;
-  onRefresh: () => void;
   onSettings: () => void;
   onAbout: () => void;
 }
 
-export function SongList({ songs, currentSong, loading, error, hasPassword, onSelectSong, onRefresh, onSettings, onAbout }: SongListProps) {
+export function SongList({ songs, currentSong, loading, error, hasPassword, onSelectSong, onSettings, onAbout }: SongListProps) {
   return (
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-lg font-serif text-foreground">Låtar</h2>
         <div className="flex items-center gap-1">
-          <Button
-            hidden={true}
-            variant="ghost"
-            size="icon"
-            onClick={onRefresh}
-            disabled={loading}
-            className="text-muted-foreground hover:text-primary h-8 w-8"
-          >
-            {loading ? <Loader2 size={16} className="animate-spin" /> : <RefreshCw size={16} />}
-          </Button>
-          <div className="relative">
+<div className="relative">
             <Button
               variant="ghost"
               size="icon"
@@ -63,7 +52,7 @@ export function SongList({ songs, currentSong, loading, error, hasPassword, onSe
 
       {songs.length === 0 && !loading && !error && (
         <p className="text-muted-foreground text-sm">
-          Inga låtar hittades. Kontrollera inställningarna och tryck på uppdatera.
+          Väntar på lösenord.
         </p>
       )}
 
