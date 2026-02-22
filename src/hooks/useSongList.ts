@@ -12,7 +12,7 @@ export function useSongList(settings: AppSettings) {
     try {
       const response = await fetch(settings.serverUrl, {
         headers: {
-          Authorization: "Basic " + btoa(`${settings.username}:${settings.password}`),
+          Authorization: "Basic " + btoa(`choir:${settings.password}`),
         },
       });
 
@@ -43,7 +43,7 @@ export function useSongList(settings: AppSettings) {
     } finally {
       setLoading(false);
     }
-  }, [settings.serverUrl, settings.password, settings.username]);
+  }, [settings.serverUrl, settings.password]);
 
   return { songs, loading, error, fetchSongs };
 }

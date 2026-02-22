@@ -39,17 +39,6 @@ export function SettingsView({ settings, onSave, onBack }: SettingsViewProps) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="username" className="text-foreground">Användarnamn</Label>
-          <Input
-            id="username"
-            value={draft.username}
-            onChange={e => setDraft(d => ({ ...d, username: e.target.value }))}
-            placeholder="choir"
-            className="bg-secondary border-border"
-          />
-        </div>
-
-        <div className="space-y-2">
           <Label htmlFor="password" className="text-foreground">Lösenord</Label>
           <Input
             id="password"

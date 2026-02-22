@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 export interface AppSettings {
   serverUrl: string;
   password: string;
-  username: string;
 }
 
 const SETTINGS_KEY = "choir-voices-settings";
@@ -11,7 +10,6 @@ const SETTINGS_KEY = "choir-voices-settings";
 const defaultSettings: AppSettings = {
   serverUrl: "https://choir-worker.choir-voices.workers.dev/vt2026",
   password: "",
-  username: "choir",
 };
 
 export function useSettings() {

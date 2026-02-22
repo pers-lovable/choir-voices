@@ -59,10 +59,8 @@ async function decodeWaveform(blob: Blob): Promise<WaveformData> {
   }
 }
 
-function makeAuthUrl(baseUrl: string, songName: string, voice: string, username: string, password: string) {
-  // Build URL with basic auth embedded for fetching
-  const url = new URL(`${baseUrl}/${songName}/${voice}.mp3`);
-  return { url: url.toString(), username, password };
+function makeUrl(baseUrl: string, songName: string, voice: string) {
+  return new URL(`${baseUrl}/${songName}/${voice}.mp3`).toString();
 }
 
 export function useAudioPlayer(settings: AppSettings) {
@@ -132,12 +130,12 @@ export function useAudioPlayer(settings: AppSettings) {
     // Create audio elements with auth
     for (const voice of VOICE_NAMES) {
       try {
-        const { url, username, password } = makeAuthUrl(settings.serverUrl, songName, voice, settings.username, settings.password);
-        
+        const url = makeUrl(settings.serverUrl, songName, voice);
+
         // Fetch with basic auth
         const response = await fetch(url, {
           headers: {
-            "Authorization": "Basic " + btoa(`${username}:${password}`),
+            "Authorization": "Basic " + btoa(`choir:${settings.password}`),
           },
         });
 
@@ -190,7 +188,7 @@ export function useAudioPlayer(settings: AppSettings) {
         }));
       }
     }
-  }, [settings.serverUrl, settings.password, settings.username]);
+  }, [settings.serverUrl, settings.password]);
 
   const play = useCallback(() => {
     // Sync all to the same time first
