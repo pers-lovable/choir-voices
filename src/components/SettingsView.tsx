@@ -45,7 +45,7 @@ export function SettingsView({ settings, onSave, onBack }: SettingsViewProps) {
             type="password"
             value={draft.password}
             onChange={e => setDraft(d => ({ ...d, password: e.target.value }))}
-            placeholder="Lösenord till Heinz Dropbox"
+            placeholder="Lösenord till korforalla.se"
             className="bg-secondary border-border"
           />
         </div>
