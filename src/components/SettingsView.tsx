@@ -39,13 +39,13 @@ export function SettingsView({ settings, onSave, onBack }: SettingsViewProps) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="password" className="text-foreground">Lösenord (samma som till Heinz Dropbox)</Label>
+          <Label htmlFor="password" className="text-foreground">Lösenord</Label>
           <Input
             id="password"
             type="password"
             value={draft.password}
             onChange={e => setDraft(d => ({ ...d, password: e.target.value }))}
-            placeholder="Lösenord för HTTP Basic Auth"
+            placeholder="Lösenord till Heinz Dropbox"
             className="bg-secondary border-border"
           />
         </div>
