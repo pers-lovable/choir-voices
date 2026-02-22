@@ -1,4 +1,4 @@
-// Cloudflare Worker — Choir Voices B2 proxy
+// Cloudflare Worker — Kör för alla B2 proxy
 //
 // Secrets (set via: wrangler secret put <NAME>):
 //   B2_KEY_ID       — Backblaze application key ID

@@ -18,12 +18,12 @@ const Index = () => {
   const { songs, loading: songsLoading, error: songsError, fetchSongs } = useSongList(settings);
   const { toast } = useToast();
 
-  // Fetch songs on mount if server URL is configured
+  // Fetch songs on mount and whenever settings change, as long as credentials are configured
   useEffect(() => {
-    if (settings.serverUrl && settings.serverUrl !== "https://choir-worker.choir-voices.workers.dev/vt2026") {
+    if (settings.serverUrl && settings.password) {
       fetchSongs();
     }
-  }, []);
+  }, [fetchSongs]);
 
   const handleSelectSong = (song: string) => {
     loadSong(song);
@@ -55,7 +55,11 @@ const Index = () => {
       <header className="flex items-center justify-between px-4 py-3 border-b border-border">
         <div className="flex items-center gap-2">
           <Music2 size={24} className="text-primary" />
-          <h1 className="text-xl font-serif text-foreground">Choir Voices</h1>
+          <h1 className="text-xl font-serif text-foreground">Kör för alla</h1>
+          <h2>- ickeofficiell app</h2>
+          <a href="https://korforalla.se/" target="_blank" rel="noopener noreferrer" className="ml-4 text-sm text-muted-foreground hover:text-foreground">
+            korforalla.se
+          </a>
         </div>
         <Button
           variant="ghost"

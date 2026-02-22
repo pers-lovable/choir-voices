@@ -1,4 +1,4 @@
-# Choir Voices
+# Kör för alla
 
 A web app for choir members to listen to individual voice tracks for songs.
 
