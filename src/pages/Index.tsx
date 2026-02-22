@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Settings, Music2 } from "lucide-react";
+import { Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSettings } from "@/hooks/useSettings";
 import { useAudioPlayer } from "@/hooks/useAudioPlayer";
@@ -54,10 +54,12 @@ const Index = () => {
       {/* Header */}
       <header className="flex items-center justify-between px-4 py-3 border-b border-border">
         <div className="flex items-center gap-2">
-          <Music2 size={24} className="text-primary" />
+          <img src="/logo.png" alt="" className="h-6 w-auto" />
           <h1 className="text-xl font-serif text-foreground">Kör för alla</h1>
           <h2>- ickeofficiell app</h2>
-          <a href="https://korforalla.se/" target="_blank" rel="noopener noreferrer" className="ml-4 text-sm text-muted-foreground hover:text-foreground">
+          <span>    </span>Sång och gitarr: Caroline af Ugglas <img src="/caroline.png" alt="" className="h-6 w-auto" /> & Heinz Liljedahl
+             <img src="/heinz.png" alt="" className="h-6 w-auto" />
+             <a href="https://korforalla.se/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
             korforalla.se
           </a>
         </div>
