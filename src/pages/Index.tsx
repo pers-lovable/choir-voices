@@ -117,7 +117,7 @@ const Index = () => {
           {/* Transport */}
           <TransportControls
             playing={state.playing}
-            disabled={!state.currentSong}
+            disabled={!state.currentSong || Object.values(state.voices).some(v => v.loading)}
             onPlay={play}
             onPause={pause}
             onStop={stop}
