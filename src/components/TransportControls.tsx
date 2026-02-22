@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Play, Pause, Square, SkipBack, SkipForward } from "lucide-react";
+import { Play, Pause, Square } from "lucide-react";
 
 interface TransportControlsProps {
   playing: boolean;
@@ -27,10 +27,9 @@ export function TransportControls({
         size="icon"
         onClick={onSkipBack}
         disabled={disabled}
-        className="text-foreground hover:text-primary"
-        title="-10 sec"
+        className="text-foreground hover:text-primary text-xs font-semibold w-10"
       >
-        <SkipBack size={20} />
+        −10s
       </Button>
 
       <Button
@@ -57,10 +56,9 @@ export function TransportControls({
         size="icon"
         onClick={onSkipForward}
         disabled={disabled}
-        className="text-foreground hover:text-primary"
-        title="+10 sec"
+        className="text-foreground hover:text-primary text-xs font-semibold w-10"
       >
-        <SkipForward size={20} />
+        +10s
       </Button>
     </div>
   );
