@@ -16,15 +16,17 @@ const Index = () => {
   const [showAbout, setShowAbout] = useState(false);
   const { settings, setSettings } = useSettings();
   const { state, loadSong, play, pause, stop, seek, skip, setVolume, voiceNames } = useAudioPlayer(settings);
-  const { songs, loading: songsLoading, error: songsError, fetchSongs } = useSongList(settings);
+  const { songs, loading: songsLoading, error: songsError, fetchSongs, clearSongs } = useSongList(settings);
   const { toast } = useToast();
 
   // Fetch songs on mount and whenever settings change, as long as credentials are configured
   useEffect(() => {
     if (settings.serverUrl && settings.password) {
       fetchSongs();
+    } else {
+      clearSongs();
     }
-  }, [fetchSongs]);
+  }, [fetchSongs, clearSongs]);
 
   const handleSelectSong = (song: string) => {
     loadSong(song);

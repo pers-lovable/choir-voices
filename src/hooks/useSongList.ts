@@ -16,6 +16,9 @@ export function useSongList(settings: AppSettings) {
         },
       });
 
+      if (response.status === 401) {
+        throw new Error("Felaktigt lösen, försök igen.");
+      }
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
@@ -45,5 +48,10 @@ export function useSongList(settings: AppSettings) {
     }
   }, [settings.serverUrl, settings.password]);
 
-  return { songs, loading, error, fetchSongs };
+  const clearSongs = useCallback(() => {
+    setSongs([]);
+    setError(null);
+  }, []);
+
+  return { songs, loading, error, fetchSongs, clearSongs };
 }
