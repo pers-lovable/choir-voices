@@ -80,6 +80,10 @@ export function useAudioPlayer(settings: AppSettings) {
 
   const animFrameRef = useRef(0);
   const loadIdRef = useRef(0);
+  // Tracks whether playback is intentionally active. Lets the rAF loop stop
+  // itself cleanly and allows it to wait for the context to finish resuming
+  // after a synchronous (non-awaited) ctx.resume() call on iOS.
+  const isPlayingRef = useRef(false);
 
   const [state, setState] = useState<PlayerState>({
     playing: false,
@@ -108,10 +112,18 @@ export function useAudioPlayer(settings: AppSettings) {
     });
   }, []);
 
-  // rAF loop: reads position from AudioContext clock while playing
+  // rAF loop: reads position from AudioContext clock while playing.
+  // When play() calls ctx.resume() synchronously (without awaiting), the context
+  // may still be "suspended" for the first few frames while resume completes.
+  // We re-queue the loop and wait — once "running", normal tracking resumes.
   const updateTime = useCallback(() => {
+    if (!isPlayingRef.current) return;
     const ctx = audioCtxRef.current;
-    if (!ctx || ctx.state !== "running") return;
+    if (!ctx || ctx.state === "closed") return;
+    if (ctx.state !== "running") {
+      animFrameRef.current = requestAnimationFrame(updateTime);
+      return;
+    }
     const raw = ctx.currentTime - startedAtRef.current;
     setState(s => ({ ...s, currentTime: Math.max(0, Math.min(raw, durationRef.current)) }));
     animFrameRef.current = requestAnimationFrame(updateTime);
@@ -143,6 +155,7 @@ export function useAudioPlayer(settings: AppSettings) {
       src.onended = () => {
         // Guard against stale closure from a previous play session
         if (sourceNodesRef.current[firstVoice] === src) {
+          isPlayingRef.current = false;
           pausedAtRef.current = 0;
           cancelAnimationFrame(animFrameRef.current);
           setState(s => ({ ...s, playing: false, currentTime: 0 }));
@@ -155,21 +168,24 @@ export function useAudioPlayer(settings: AppSettings) {
     });
   }, []);
 
-  const play = useCallback(async () => {
-    // Stop any lingering nodes from a previous session
+  const play = useCallback(() => {
     stopSourceNodes();
 
     const ctx = audioCtxRef.current;
-    if (!ctx) return; // no song loaded yet
+    if (!ctx || ctx.state === "closed") return;
 
-    // iOS requires AudioContext.resume() to be called inside a user-gesture handler.
-    // The context was created (suspended) during loadSong; resuming it here — inside
-    // the play button's click handler — satisfies that requirement on all platforms.
-    if (ctx.state === "suspended") {
-      await ctx.resume();
-    }
-
+    // iOS Safari requires both resume() AND source.start() to be called
+    // synchronously within the same user-gesture handler. Using async/await
+    // moves source.start() into a microtask continuation which iOS may not
+    // consider "user-activated", resulting in silent (but otherwise running)
+    // audio nodes. Calling resume() fire-and-forget and starting sources
+    // immediately satisfies iOS's requirement: sources scheduled at
+    // ctx.currentTime + 0.01 will start as soon as the context resumes
+    // (typically within one audio-processing quantum, ~3 ms).
+    ctx.resume();
     startNodesAt(ctx, pausedAtRef.current);
+
+    isPlayingRef.current = true;
     setState(s => ({ ...s, playing: true }));
     animFrameRef.current = requestAnimationFrame(updateTime);
   }, [stopSourceNodes, startNodesAt, updateTime]);
@@ -177,8 +193,8 @@ export function useAudioPlayer(settings: AppSettings) {
   const pause = useCallback(() => {
     const ctx = audioCtxRef.current;
     if (!ctx) return;
-    // Record position before suspending
     pausedAtRef.current = Math.max(0, ctx.currentTime - startedAtRef.current);
+    isPlayingRef.current = false;
     stopSourceNodes();
     ctx.suspend();
     cancelAnimationFrame(animFrameRef.current);
@@ -186,6 +202,7 @@ export function useAudioPlayer(settings: AppSettings) {
   }, [stopSourceNodes]);
 
   const stop = useCallback(() => {
+    isPlayingRef.current = false;
     stopSourceNodes();
     pausedAtRef.current = 0;
     audioCtxRef.current?.suspend();
