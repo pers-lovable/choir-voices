@@ -38,9 +38,9 @@ export function SongList({ songs, currentSong, loading, error, hasPassword, onSe
               variant="ghost"
               size="icon"
               onClick={onSettings}
-              className="text-muted-foreground hover:text-primary h-8 w-8"
+              className="text-muted-foreground hover:text-primary h-10 w-10"
             >
-              <Settings size={16} />
+              <Settings size={20} />
             </Button>
           </div>
           {!hasPassword && tipPos !== null && createPortal(
@@ -57,9 +57,9 @@ export function SongList({ songs, currentSong, loading, error, hasPassword, onSe
             variant="ghost"
             size="icon"
             onClick={onAbout}
-            className="text-muted-foreground hover:text-primary h-8 w-8"
+            className="text-muted-foreground hover:text-primary h-10 w-10"
           >
-            <Info size={16} />
+            <Info size={20} />
           </Button>
         </div>
       </div>
@@ -80,13 +80,13 @@ export function SongList({ songs, currentSong, loading, error, hasPassword, onSe
             <button
               key={song}
               onClick={() => onSelectSong(song)}
-              className={`w-full text-left px-3 py-2.5 rounded-md transition-colors flex items-center gap-2 text-sm ${
+              className={`w-full text-left px-3 py-3 rounded-md transition-colors flex items-center gap-2 text-base ${
                 song === currentSong
                   ? "bg-primary/15 text-primary font-medium"
                   : "text-secondary-foreground hover:bg-secondary/80"
               }`}
             >
-              <Music size={14} className={song === currentSong ? "text-primary" : "text-muted-foreground"} />
+              <Music size={16} className={song === currentSong ? "text-primary" : "text-muted-foreground"} />
               <span className="truncate">{decodeURIComponent(song).replace(/-/g, " ")}</span>
             </button>
           ))}

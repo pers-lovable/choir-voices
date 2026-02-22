@@ -27,7 +27,7 @@ export function TransportControls({
         size="icon"
         onClick={onSkipBack}
         disabled={disabled}
-        className="text-foreground hover:text-primary text-xs font-semibold w-10"
+        className="text-foreground hover:text-primary text-sm font-semibold h-11 w-12"
       >
         −10s
       </Button>
@@ -37,18 +37,18 @@ export function TransportControls({
         size="icon"
         onClick={onStop}
         disabled={disabled}
-        className="text-foreground hover:text-primary"
+        className="text-foreground hover:text-primary h-11 w-11"
       >
-        <Square size={18} />
+        <Square size={22} />
       </Button>
 
       <Button
         size="icon"
         onClick={playing ? onPause : onPlay}
         disabled={disabled}
-        className="h-12 w-12 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg"
+        className="h-16 w-16 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg"
       >
-        {playing ? <Pause size={22} /> : <Play size={22} className="ml-0.5" />}
+        {playing ? <Pause size={28} /> : <Play size={28} className="ml-0.5" />}
       </Button>
 
       <Button
@@ -56,7 +56,7 @@ export function TransportControls({
         size="icon"
         onClick={onSkipForward}
         disabled={disabled}
-        className="text-foreground hover:text-primary text-xs font-semibold w-10"
+        className="text-foreground hover:text-primary text-sm font-semibold h-11 w-12"
       >
         +10s
       </Button>

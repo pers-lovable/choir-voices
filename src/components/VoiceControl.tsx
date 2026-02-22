@@ -38,9 +38,9 @@ export function VoiceControl({ voice, onVolumeChange, waveformData, currentTime,
         duration={duration}
       />
       <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2 w-20">
-          <div className={`w-2.5 h-2.5 rounded-full ${voiceColorClass[voice.name]} ${voice.loading ? "animate-pulse-glow" : ""}`} />
-          <span className={`text-sm font-semibold capitalize ${voiceTextClass[voice.name]}`}>
+        <div className="flex items-center gap-2 w-24">
+          <div className={`w-3 h-3 rounded-full ${voiceColorClass[voice.name]} ${voice.loading ? "animate-pulse-glow" : ""}`} />
+          <span className={`text-base font-semibold capitalize ${voiceTextClass[voice.name]}`}>
             {voice.name}
           </span>
         </div>
@@ -49,7 +49,7 @@ export function VoiceControl({ voice, onVolumeChange, waveformData, currentTime,
           onClick={() => onVolumeChange(voice.name, isMuted ? 0.8 : 0)}
           className="text-muted-foreground hover:text-foreground transition-colors"
         >
-          {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+          {isMuted ? <VolumeX size={22} /> : <Volume2 size={22} />}
         </button>
 
         <Slider
@@ -60,14 +60,14 @@ export function VoiceControl({ voice, onVolumeChange, waveformData, currentTime,
           className="flex-1"
         />
 
-        <span className="text-xs text-muted-foreground w-8 text-right">
+        <span className="text-sm text-muted-foreground w-10 text-right">
           {Math.round(voice.volume * 100)}%
         </span>
 
-        {voice.loading && <Loader2 size={16} className="animate-spin text-muted-foreground" />}
+        {voice.loading && <Loader2 size={18} className="animate-spin text-muted-foreground" />}
         {voice.error && (
-          <span className="text-destructive text-xs flex items-center gap-1">
-            <AlertCircle size={14} />
+          <span className="text-destructive text-sm flex items-center gap-1">
+            <AlertCircle size={16} />
             {voice.error}
           </span>
         )}

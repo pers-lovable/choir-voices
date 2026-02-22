@@ -16,7 +16,7 @@ function formatTime(seconds: number): string {
 export function Timeline({ currentTime, duration, onSeek }: TimelineProps) {
   return (
     <div className="flex items-center gap-3 w-full">
-      <span className="text-xs text-muted-foreground w-10 text-right font-mono">
+      <span className="text-sm text-muted-foreground w-12 text-right font-mono">
         {formatTime(currentTime)}
       </span>
       <Slider
@@ -26,7 +26,7 @@ export function Timeline({ currentTime, duration, onSeek }: TimelineProps) {
         step={0.1}
         className="flex-1"
       />
-      <span className="text-xs text-muted-foreground w-10 font-mono">
+      <span className="text-sm text-muted-foreground w-12 font-mono">
         {formatTime(duration)}
       </span>
     </div>
