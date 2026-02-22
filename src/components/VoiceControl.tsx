@@ -32,8 +32,7 @@ export function VoiceControl({ voice, onVolumeChange, waveformData, currentTime,
     <div className="rounded-lg bg-secondary/50 px-4 py-3 space-y-2">
       <WaveformDisplay
         voiceName={voice.name}
-        waveformData={waveformData?.data ?? null}
-        waveformDuration={waveformData?.decodedDuration ?? 0}
+        waveformData={waveformData?.waveform ?? null}
         currentTime={currentTime}
         duration={duration}
       />
