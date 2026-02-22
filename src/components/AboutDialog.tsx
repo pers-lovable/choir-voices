@@ -30,8 +30,13 @@ export function AboutDialog({ open, onClose }: AboutDialogProps) {
             <span className="text-xs text-muted-foreground">Heinz Liljedahl</span>
           </div>
         </div>
-
-
+        Ljudfilerna från Heinz Dropbox har processats så här: 
+        <ul className="list-disc list-inside text-sm text-foreground">
+          <li>Grön, röd och svart orginalfil trimmades så att de börjar vid samma tidpunkt (synkning).</li>
+          <li>Sång och gitarr separerades genom s.k. stemming m.h.a. <a href="https://github.com/nomadkaraoke/python-audio-separator" target="_blank" className="underline">python-audio-separator</a>. OBS det sker på bekostnad av viss ljudförsämring av sång och gitarr.</li>
+          <li>Gitarrens ljudfil har plockats från svart stämmas orginalfil (efter stemmingen).</li>
+        </ul>
+        Appen är inte kopplad till Kör för alla utan är ett hobbyprojekt. För frågor eller feedback, besök gärna <a href="https://github.com/pers-lovable/choir-voices" target="_blank" className="">GitHub-sidan</a>.
         <a
           href="https://korforalla.se/"
           target="_blank"
