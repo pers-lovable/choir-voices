@@ -1,12 +1,12 @@
 import { Slider } from "@/components/ui/slider";
-import type { VoiceName, VoiceState } from "@/hooks/useAudioPlayer";
+import type { VoiceName, VoiceState, WaveformData } from "@/hooks/useAudioPlayer";
 import { Volume2, VolumeX, Loader2, AlertCircle } from "lucide-react";
 import { WaveformDisplay } from "./WaveformDisplay";
 
 interface VoiceControlProps {
   voice: VoiceState;
   onVolumeChange: (voice: VoiceName, volume: number) => void;
-  waveformData: Float32Array | null;
+  waveformData: WaveformData | null;
   currentTime: number;
   duration: number;
 }
@@ -32,7 +32,8 @@ export function VoiceControl({ voice, onVolumeChange, waveformData, currentTime,
     <div className="rounded-lg bg-secondary/50 px-4 py-3 space-y-2">
       <WaveformDisplay
         voiceName={voice.name}
-        waveformData={waveformData}
+        waveformData={waveformData?.data ?? null}
+        waveformDuration={waveformData?.decodedDuration ?? 0}
         currentTime={currentTime}
         duration={duration}
       />

@@ -10,25 +10,37 @@ export interface VoiceState {
   error: string | null;
 }
 
+export interface WaveformData {
+  data: Float32Array;
+  decodedDuration: number;
+}
+
 export interface PlayerState {
   playing: boolean;
   currentTime: number;
   duration: number;
   currentSong: string | null;
   voices: Record<VoiceName, VoiceState>;
-  waveforms: Record<VoiceName, Float32Array | null>;
+  waveforms: Record<VoiceName, WaveformData | null>;
 }
 
 const VOICE_NAMES: VoiceName[] = ["grön", "röd", "svart", "instrument"];
 
 const WAVEFORM_SAMPLES = 4000;
 
-async function decodeWaveform(blob: Blob): Promise<Float32Array> {
+async function decodeWaveform(blob: Blob): Promise<WaveformData> {
   const arrayBuffer = await blob.arrayBuffer();
   const audioContext = new AudioContext();
   try {
     const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
     const channelData = audioBuffer.getChannelData(0);
+    // Use audioBuffer.duration (the raw decoded duration) as the denominator
+    // for sample index mapping in WaveformDisplay. This duration may include
+    // MP3 encoder delay/trailing padding that Firefox/Safari do not strip,
+    // making it slightly longer than HTMLAudioElement.duration. By keeping
+    // it here and threading it to the renderer, the waveform scrolls in
+    // lockstep with what was actually decoded — no samples are discarded
+    // and audio playback is completely unaffected.
     const blockSize = Math.floor(channelData.length / WAVEFORM_SAMPLES);
     const waveform = new Float32Array(WAVEFORM_SAMPLES);
     for (let i = 0; i < WAVEFORM_SAMPLES; i++) {
@@ -41,7 +53,7 @@ async function decodeWaveform(blob: Blob): Promise<Float32Array> {
       }
       waveform[i] = max;
     }
-    return waveform;
+    return { data: waveform, decodedDuration: audioBuffer.duration };
   } finally {
     audioContext.close();
   }
