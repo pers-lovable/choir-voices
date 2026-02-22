@@ -21,6 +21,7 @@ export function SongList({ songs, currentSong, loading, error, hasPassword, onSe
         <h2 className="text-lg font-serif text-foreground">Låtar</h2>
         <div className="flex items-center gap-1">
           <Button
+            hidden={true}
             variant="ghost"
             size="icon"
             onClick={onRefresh}
