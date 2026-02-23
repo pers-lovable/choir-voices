@@ -65,7 +65,7 @@ const Index = () => {
     : null;
 
   return (
-    <div className="h-dvh overflow-hidden bg-background flex flex-col">
+    <div className="min-h-dvh bg-background flex flex-col">
       {/* Header */}
       <header className="flex items-center px-4 py-3 border-b border-border">
         <img src="/logo.png" alt="" className="h-6 w-auto" />
@@ -93,7 +93,7 @@ const Index = () => {
 
       <AboutDialog open={showAbout} onClose={() => setShowAbout(false)} />
 
-      <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
+      <div className="flex-1 flex flex-col md:flex-row">
         {/* Song list sidebar — desktop only */}
         <aside className="hidden md:flex md:flex-col md:w-64 lg:w-72 border-r border-border p-4 h-[calc(100vh-57px)] overflow-hidden">
           <SongList
