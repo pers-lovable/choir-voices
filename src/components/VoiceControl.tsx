@@ -36,7 +36,7 @@ export function VoiceControl({ voice, onVolumeChange, waveformData, currentTime,
   const isMuted = voice.volume === 0;
 
   return (
-    <div className="rounded-lg bg-secondary/50 px-4 py-3 space-y-2">
+    <div className="rounded-lg bg-secondary/50 px-3 py-2 space-y-2 md:px-4 md:py-3">
       <WaveformDisplay
         voiceName={voice.name}
         waveformData={waveformData?.waveform ?? null}

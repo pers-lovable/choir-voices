@@ -65,7 +65,7 @@ const Index = () => {
     : null;
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-dvh bg-background flex flex-col">
       {/* Header */}
       <header className="flex items-center px-4 py-3 border-b border-border">
         <img src="/logo.png" alt="" className="h-6 w-auto" />
@@ -93,7 +93,7 @@ const Index = () => {
 
       <AboutDialog open={showAbout} onClose={() => setShowAbout(false)} />
 
-      <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
+      <div className="flex-1 flex flex-col md:flex-row">
         {/* Song list sidebar — desktop only */}
         <aside className="hidden md:flex md:flex-col md:w-64 lg:w-72 border-r border-border p-4 h-[calc(100vh-57px)] overflow-hidden">
           <SongList
@@ -106,7 +106,7 @@ const Index = () => {
         </aside>
 
         {/* Main player area */}
-        <main className="flex-1 flex flex-col items-center justify-center p-6 gap-6">
+        <main className="flex-1 flex flex-col items-center justify-center p-3 gap-3 md:p-6 md:gap-6">
           {/* Song selector: dropdown on mobile, title text on desktop */}
           <div className="w-full max-w-md">
             {/* Mobile dropdown */}
