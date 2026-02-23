@@ -102,7 +102,7 @@ export function WaveformDisplay({ voiceName, waveformData, waveformDuration, cur
   return (
     <canvas
       ref={canvasRef}
-      className="w-full h-10 rounded-sm"
+      className="w-full h-8 md:h-10 rounded-sm"
     />
   );
 }

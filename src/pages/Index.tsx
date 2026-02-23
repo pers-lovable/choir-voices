@@ -65,7 +65,7 @@ const Index = () => {
     : null;
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="h-dvh overflow-hidden bg-background flex flex-col">
       {/* Header */}
       <header className="flex items-center px-4 py-3 border-b border-border">
         <img src="/logo.png" alt="" className="h-6 w-auto" />
@@ -106,7 +106,7 @@ const Index = () => {
         </aside>
 
         {/* Main player area */}
-        <main className="flex-1 flex flex-col items-center justify-center p-6 gap-6">
+        <main className="flex-1 flex flex-col items-center justify-center p-3 gap-3 md:p-6 md:gap-6">
           {/* Song selector: dropdown on mobile, title text on desktop */}
           <div className="w-full max-w-md">
             {/* Mobile dropdown */}
