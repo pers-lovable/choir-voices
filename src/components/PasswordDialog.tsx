@@ -42,7 +42,7 @@ export function PasswordDialog({ open, error, onSubmit }: PasswordDialogProps) {
               type="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
-              placeholder="Lösenord"
+              placeholder="Samma som till körens webbsida"
               autoFocus
               className="bg-secondary border-border text-base h-11"
             />

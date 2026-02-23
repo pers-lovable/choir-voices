@@ -12,7 +12,6 @@ import { AboutDialog } from "@/components/AboutDialog";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Info } from "lucide-react";
 
 const Index = () => {
   const [showAbout, setShowAbout] = useState(false);
@@ -75,11 +74,10 @@ const Index = () => {
         <div className="ml-auto">
           <Button
             variant="ghost"
-            size="icon"
             onClick={() => setShowAbout(true)}
-            className="text-muted-foreground hover:text-primary h-12 w-12"
+            className="text-muted-foreground hover:text-primary"
           >
-            <Info size={28} />
+            Om denna sida
           </Button>
         </div>
       </header>
