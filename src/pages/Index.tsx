@@ -77,9 +77,9 @@ const Index = () => {
             variant="ghost"
             size="icon"
             onClick={() => setShowAbout(true)}
-            className="text-muted-foreground hover:text-primary h-10 w-10"
+            className="text-muted-foreground hover:text-primary h-12 w-12"
           >
-            <Info size={24} />
+            <Info size={28} />
           </Button>
         </div>
       </header>
@@ -113,6 +113,7 @@ const Index = () => {
           <div className="w-full max-w-md">
             {/* Mobile dropdown */}
             <div className="md:hidden">
+              <p className="text-sm font-medium text-muted-foreground mb-1">Välj sång:</p>
               <Select
                 value={state.currentSong ?? ""}
                 onValueChange={handleSelectSong}
