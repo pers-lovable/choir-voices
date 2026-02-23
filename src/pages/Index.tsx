@@ -10,6 +10,9 @@ import { SongList } from "@/components/SongList";
 import { PasswordDialog } from "@/components/PasswordDialog";
 import { AboutDialog } from "@/components/AboutDialog";
 import { useToast } from "@/hooks/use-toast";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Info } from "lucide-react";
 
 const Index = () => {
   const [showAbout, setShowAbout] = useState(false);
@@ -69,6 +72,16 @@ const Index = () => {
         <img src="/logo.png" alt="" className="h-6 w-auto" />
         <h1 className="text-xl font-serif text-foreground ml-2">Kör för alla</h1>
         <h2 className="text-sm font-serif text-muted-foreground ml-2">(inofficiellt verktyg)</h2>
+        <div className="ml-auto">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setShowAbout(true)}
+            className="text-muted-foreground hover:text-primary h-10 w-10"
+          >
+            <Info size={24} />
+          </Button>
+        </div>
       </header>
 
       <PasswordDialog
@@ -83,27 +96,49 @@ const Index = () => {
       <AboutDialog open={showAbout} onClose={() => setShowAbout(false)} />
 
       <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
-        {/* Song list sidebar */}
-        <aside className="w-full md:w-64 lg:w-72 border-b md:border-b-0 md:border-r border-border p-4 md:h-[calc(100vh-57px)] overflow-hidden flex flex-col">
+        {/* Song list sidebar — desktop only */}
+        <aside className="hidden md:flex md:flex-col md:w-64 lg:w-72 border-r border-border p-4 h-[calc(100vh-57px)] overflow-hidden">
           <SongList
             songs={songs}
             currentSong={state.currentSong}
             loading={songsLoading}
             error={authFailed ? null : songsError}
             onSelectSong={handleSelectSong}
-            onAbout={() => setShowAbout(true)}
           />
         </aside>
 
         {/* Main player area */}
         <main className="flex-1 flex flex-col items-center justify-center p-6 gap-6">
-          {/* Current song title */}
-          <div className="text-center">
-            {songDisplayName ? (
-              <h2 className="text-2xl font-serif text-foreground capitalize">{songDisplayName}</h2>
-            ) : (
-              <p className="text-muted-foreground text-lg">Välj en låt för att börja</p>
-            )}
+          {/* Song selector: dropdown on mobile, title text on desktop */}
+          <div className="w-full max-w-md">
+            {/* Mobile dropdown */}
+            <div className="md:hidden">
+              <Select
+                value={state.currentSong ?? ""}
+                onValueChange={handleSelectSong}
+                disabled={songs.length === 0}
+              >
+                <SelectTrigger className="w-full h-12 text-base">
+                  <SelectValue placeholder={songsLoading ? "Laddar låtar..." : "Väntar på lösenord..."} />
+                </SelectTrigger>
+                <SelectContent>
+                  {songs.map(song => (
+                    <SelectItem key={song} value={song} className="text-base py-3">
+                      {decodeURIComponent(song).replace(/-/g, " ")}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Desktop title */}
+            <div className="hidden md:block text-center">
+              {songDisplayName ? (
+                <h2 className="text-2xl font-serif text-foreground capitalize">{songDisplayName}</h2>
+              ) : (
+                <p className="text-muted-foreground text-lg">Välj en låt för att börja</p>
+              )}
+            </div>
           </div>
 
           {/* Voice controls */}
