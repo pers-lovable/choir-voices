@@ -25,6 +25,13 @@ const voiceTextClass: Record<VoiceName, string> = {
   "instrument": "voice-instrument",
 };
 
+const voiceDisplayName: Record<VoiceName, string> = {
+  "grön": "Grön",
+  "röd": "Röd",
+  "svart": "Svart",
+  "instrument": "Gitarr",
+};
+
 export function VoiceControl({ voice, onVolumeChange, waveformData, currentTime, duration }: VoiceControlProps) {
   const isMuted = voice.volume === 0;
 
@@ -37,11 +44,11 @@ export function VoiceControl({ voice, onVolumeChange, waveformData, currentTime,
         currentTime={currentTime}
         duration={duration}
       />
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2 w-24">
-          <div className={`w-3 h-3 rounded-full ${voiceColorClass[voice.name]} ${voice.loading ? "animate-pulse-glow" : ""}`} />
-          <span className={`text-base font-semibold capitalize ${voiceTextClass[voice.name]}`}>
-            {voice.name}
+      <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-14">
+          <div className={`w-3 h-3 rounded-full shrink-0 ${voiceColorClass[voice.name]} ${voice.loading ? "animate-pulse-glow" : ""}`} />
+          <span className={`text-base font-semibold ${voiceTextClass[voice.name]}`}>
+            {voiceDisplayName[voice.name]}
           </span>
         </div>
 
@@ -60,7 +67,7 @@ export function VoiceControl({ voice, onVolumeChange, waveformData, currentTime,
           className="flex-1"
         />
 
-        <span className="text-sm text-muted-foreground w-10 text-right">
+        <span className="text-sm text-muted-foreground w-8 text-right">
           {Math.round(voice.volume * 100)}%
         </span>
 

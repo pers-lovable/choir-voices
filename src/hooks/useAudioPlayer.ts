@@ -149,7 +149,7 @@ export function useAudioPlayer(settings: AppSettings) {
   // at exactly ctx.currentTime + 0.01s with the given offset into the buffer.
   // All four voices share the same scheduled start time → perfect sync.
   const startNodesAt = useCallback((ctx: AudioContext, offset: number) => {
-    const startTime = ctx.currentTime + 0.01;
+    const startTime = ctx.currentTime + 0.1;
     startedAtRef.current = startTime - offset;
 
     VOICE_NAMES.forEach(v => {
