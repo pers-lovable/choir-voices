@@ -1,6 +1,5 @@
-import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Music, Info } from "lucide-react";
+import { Music } from "lucide-react";
 
 interface SongListProps {
   songs: string[];
@@ -8,22 +7,13 @@ interface SongListProps {
   loading: boolean;
   error: string | null;
   onSelectSong: (song: string) => void;
-  onAbout: () => void;
 }
 
-export function SongList({ songs, currentSong, loading, error, onSelectSong, onAbout }: SongListProps) {
+export function SongList({ songs, currentSong, loading, error, onSelectSong }: SongListProps) {
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between mb-3">
+      <div className="mb-3">
         <h2 className="text-lg font-serif text-foreground">Låtar</h2>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onAbout}
-          className="text-muted-foreground hover:text-primary h-10 w-10"
-        >
-          <Info size={20} />
-        </Button>
       </div>
 
       {error && (
