@@ -7,17 +7,23 @@ import { VoiceControl } from "@/components/VoiceControl";
 import { TransportControls } from "@/components/TransportControls";
 import { Timeline } from "@/components/Timeline";
 import { SongList } from "@/components/SongList";
-import { SettingsView } from "@/components/SettingsView";
+import { PasswordDialog } from "@/components/PasswordDialog";
 import { AboutDialog } from "@/components/AboutDialog";
 import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
-  const [showSettings, setShowSettings] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const { settings, setSettings } = useSettings();
   const { state, loadSong, play, pause, stop, seek, skip, setVolume, voiceNames } = useAudioPlayer(settings);
-  const { songs, loading: songsLoading, error: songsError, fetchSongs, clearSongs } = useSongList(settings);
+  const { songs, loading: songsLoading, error: songsError, authFailed, fetchSongs, clearSongs } = useSongList(settings);
   const { toast } = useToast();
+
+  const [showPasswordDialog, setShowPasswordDialog] = useState(!settings.password);
+
+  // Re-open the password dialog on auth failure
+  useEffect(() => {
+    if (authFailed) setShowPasswordDialog(true);
+  }, [authFailed]);
 
   // Fetch songs on mount and whenever settings change, as long as credentials are configured
   useEffect(() => {
@@ -52,22 +58,6 @@ const Index = () => {
     loadSong(song);
   };
 
-  if (showSettings) {
-    return (
-      <div className="min-h-screen bg-background">
-        <SettingsView
-          settings={settings}
-          onSave={(s) => {
-            setSettings(s);
-            toast({ title: "Inställningar sparade" });
-            setShowSettings(false);
-          }}
-          onBack={() => setShowSettings(false)}
-        />
-      </div>
-    );
-  }
-
   const songDisplayName = state.currentSong
     ? decodeURIComponent(state.currentSong).replace(/-/g, " ")
     : null;
@@ -81,6 +71,15 @@ const Index = () => {
         <h2 className="text-sm font-serif text-muted-foreground ml-2">(inofficiellt verktyg)</h2>
       </header>
 
+      <PasswordDialog
+        open={showPasswordDialog}
+        error={authFailed ? "Felaktigt lösenord." : null}
+        onSubmit={(password) => {
+          setSettings(s => ({ ...s, password }));
+          setShowPasswordDialog(false);
+        }}
+      />
+
       <AboutDialog open={showAbout} onClose={() => setShowAbout(false)} />
 
       <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
@@ -90,10 +89,8 @@ const Index = () => {
             songs={songs}
             currentSong={state.currentSong}
             loading={songsLoading}
-            error={songsError}
-            hasPassword={!!settings.password}
+            error={authFailed ? null : songsError}
             onSelectSong={handleSelectSong}
-            onSettings={() => setShowSettings(true)}
             onAbout={() => setShowAbout(true)}
           />
         </aside>

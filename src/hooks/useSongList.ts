@@ -5,6 +5,7 @@ export function useSongList(settings: AppSettings) {
   const [songs, setSongs] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [authFailed, setAuthFailed] = useState(false);
 
   const fetchSongs = useCallback(async () => {
     setLoading(true);
@@ -17,11 +18,13 @@ export function useSongList(settings: AppSettings) {
       });
 
       if (response.status === 401) {
-        throw new Error("Felaktigt lösen, försök igen.");
+        setAuthFailed(true);
+        throw new Error("Felaktigt lösenord.");
       }
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
+      setAuthFailed(false);
 
       const html = await response.text();
 
@@ -51,7 +54,8 @@ export function useSongList(settings: AppSettings) {
   const clearSongs = useCallback(() => {
     setSongs([]);
     setError(null);
+    setAuthFailed(false);
   }, []);
 
-  return { songs, loading, error, fetchSongs, clearSongs };
+  return { songs, loading, error, authFailed, fetchSongs, clearSongs };
 }
